@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="admin/index :: head"> 
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="admin/index :: sidebar"> 
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav th:replace="admin/index :: sidebartop"> 
+        </nav>
+        <!-- Topbar -->
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          
+          <!-- Row -->
+          <div class="row">
+            <!-- DataTable with Hover -->
+            <div class="col-lg-12">
+              <div class="card mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h2 class="m-0 font-weight-bold text-primary">Departments</h2>
+                   <div class="card-tools float-right">
+			<a href="javascript:void(0)" class="btn btn-flat btn-primary" id="create_new"><span class="fas fa-plus"></span>  Create New</a>
+		</div>
+                </div>
+               
+                <div class="table-responsive p-3">
+                  <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Name</th> 
+                        <th>Descirption</th>
+                        <th>Date Updated</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                         <th>Name</th> 
+                        <th>Descirption</th>
+                        <th>Date Updated</th>
+                        <th>Action</th>
+                      </tr>
+                    </tfoot>
+                    <tbody>
+                    
+                    </tbody>
+                     </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+          
+
+          <!-- Modal Logout -->
+          <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelform"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2 class="modal-title" id="exampleModalLabelform"></h2>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form action="/admin/JSON/departments" id="modalform" method="post">
+                <div class="modal-body">
+             	
+		<input type="hidden" name ="id" value="0">
+		<input type="hidden" name ="action" value="">
+
+		<div class="form-group">
+			<label for="name" class="control-label required">Name</label>
+			<input name="name" id="name" type="text" class="form-control form  rounded-0"   required/>
+		</div>
+		<div class="form-group">
+			<label for="description" class="control-label">Description</label>
+			<textarea name="description" id="description" cols="30" rows="3" style="resize:none !important" class="form-control form no-resize rounded-0"  > </textarea>
+		</div>
+	 
+                </div>
+                <div class="modal-footer">
+                  <button type="submit"  class="btn btn-primary" id="submit">Save</button>
+                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                  
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Footer -->
+      <footer th:replace="admin/index :: footer"> 
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div> 
+ <script>
+    $(document).ready(function () { 
+      $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+      
+      $("#create_new").click(function(){
+    	  $('#formModal [name=action]').val('add');
+    	  $("#modalform")[0].reset();
+    	  $('#formModal [name=id]').val('0');  
+    	  $('#formModal .modal-title').html('Create New Department');
+    	  $('#formModal').modal('show');
+      });
+      
+     
+      
+      $("#modalform").off( "submit");
+	   $("#modalform").submit(function(e) {
+
+	      e.preventDefault(); // avoid to execute the actual submit of the form.
+
+	      var form = $(this);
+	      var url = form.attr('action');
+	      
+	      $("#modalform .alert").hide();
+	      var data=form.serialize(); 
+	      $.ajax({
+	             type: "POST",
+	             url: $(this).attr("action"),  
+	             data:data , // serializes the form's elements.
+	   		    dataType: "json",
+	             success: function(data)
+	             {
+	   		      if(data.success)
+	                  {alert_toast(data.message,'success');  $("#formModal").modal('hide'); loaddata();} // show response from the php script.
+	   			  else
+	   				  {
+	   				alert_toast(data.message,'error'); // show response from the php script.  
+	   				  }
+	   		  
+	   		      }
+	           });
+	   		     }); 
+	   loaddata();
+    });
+    
+    function loaddata()
+    {
+    	 $('#dataTableHover tbody').html("  <h1>Loading........</h1>"); 
+    	 $.ajax({
+             type: "POST",
+             url: "/admin/JSON/departments",  
+             data:{action:"readall"} , // serializes the form's elements.
+   		    dataType: "json",
+             success: function(data)
+             {
+   		      if(data.success)
+                  {
+   		    	    data=data.data;
+   		    	 if ( $.fn.DataTable.isDataTable('#dataTableHover') ) {
+   		    	  $('#dataTableHover').DataTable().destroy();
+   		    	}
+   		    	 strhtml="";
+   		    	    for(i=0;i<data.length;i++)
+   		    	    	{
+   		    	    	 strhtml+="<tr><td>"+data[i].name+"</td><td>"+data[i].description+"</td><td>"+formattimestamp(data[i].date_created)+"</td>"
+   		    	    	 strhtml+='<td><button type="button" class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">'
+				                  +'Action<span class="sr-only">Toggle Dropdown</span></button>'
+				                  +'<div class="dropdown-menu" role="menu">'
+				                  +' <a class="dropdown-item edit_data" href="javascript:void(0)" data-id="'+data[i].id+'"><span class="fa fa-edit text-primary"></span> Edit</a>'
+				                  +' <div class="dropdown-divider"></div>'
+				                  +'  <a class="dropdown-item delete_data" href="javascript:void(0)" data-id="'+data[i].id+'"><span class="fa fa-trash text-danger"></span> Delete</a>'
+				                  +'</div>'
+				                  +'</td>'
+   		    	    	          +'</tr>';
+   		    	    	}
+   		    	 $('#dataTableHover tbody').html(strhtml);
+   		    	$('#dataTableHover').DataTable();
+   		     $('.delete_data').click(function(){
+   				_conf("Are you sure to delete this Department permanently?","delete_department",[$(this).attr('data-id')])
+   			});
+   			
+   			$('.edit_data').click(function(){
+   				$("#modalform")[0].reset();
+   				  $('#formModal [name=action]').val('edit'); 
+   		    	  $('#formModal .modal-title').html('Edit Department Details');
+   		    	  $('#formModal [name=id]').val($(this).attr('data-id')); 
+   		    	  
+   		     	 $.ajax({
+   		             type: "POST",
+   		             url: "/admin/JSON/departments",  
+   		             data:{action:"read",id:$(this).attr('data-id')} , // serializes the form's elements.
+   		   		    dataType: "json",
+   		             success: function(data)
+   		             {
+   		   		      if(data.success)
+   		   		    	  {   
+   		    	            $('#formModal [name=name]').val(data.data.name); 
+   		    	            $('#formModal [name=description]').val(data.data.description); 
+   		    	            $('#formModal').modal('show');
+   		   		    	  }
+   		   		      else
+   		   		    	  {
+   		   		    alert_toast(data.message,'error');
+				     end_loader();
+   		   		    	  }
+                  }
+
+		 	          });
+   			});
+                  }
+   		      else
+                  alert(data.message);
+   		  
+   		      }
+           });
+    }
+    
+    function delete_department(id)
+    {
+    	 $.ajax({
+             type: "POST",
+             url: "/admin/JSON/departments",  
+             data:{action:"delete",id:id} , // serializes the form's elements.
+   		    dataType: "json",
+             success: function(data)
+             {
+   		      if(data.success)
+   		    	  {
+   		    	    alert_toast(data.message,'success');
+   		    	 $('#confirm_modal').modal('hide');
+   		            loaddata();    
+   		     	  }
+   		      else
+   		    	  {
+   		    	     alert_toast(data.message,'error'); 
+   		    	  }
+             }
+    	 });
+    }
+  </script>
+
+</body>
+
+</html>

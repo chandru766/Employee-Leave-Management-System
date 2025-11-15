@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="admin/index :: head"> 
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="admin/index :: sidebar"> 
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav th:replace="admin/index :: sidebartop"> 
+        </nav>
+        <!-- Topbar -->
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          
+          <!-- Row -->
+          <div class="row">
+            <!-- DataTable with Hover -->
+            <div class="col-lg-12">
+              <div class="card mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h2 class="m-0 font-weight-bold text-primary">Employee Leave Balances - <select onclick="loaddata()"  id="selectstatus">
+                   <option value=1>Active</option>
+                   <option value=0>Inactive</option>
+                  </select></h2>
+                    
+                </div>
+               
+                <div class="table-responsive p-3">
+                  <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                       <tr>
+                      <th>EmpID</th>  
+                        <th>Name</th>  
+                        <th>Department <br/>Designation</br>Date of Joining</th>
+                         <th>Leave Balance</th>  
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                      <th>EmpID</th>  
+                        <th>Name</th>  
+                        <th>Department <br/>Designation</br>Date of Joining</th>
+                         <th>Leave Balance</th> 
+                        <th>Action</th>
+                      </tr>
+                    </tfoot>
+                    <tbody>
+                    
+                    </tbody>
+                     </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+          
+
+          <!-- Modal Logout -->
+          <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelform"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2 class="modal-title" id="exampleModalLabelform"></h2>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form action="/admin/JSON/leavebalances" id="modalform" method="post">
+                <div class="modal-body">
+             	
+		<input type="hidden" name ="id" value="0">
+		<input type="hidden" name ="action" value="">
+
+		  <div class="row">
+                     <div class="col-6">
+						<div class="form-group">
+							<label>Empid</label>
+							<span class="form-control rounded-0 empid"></span>
+						</div>
+						</div>
+						<div class="col-6">
+						<div class="form-group">
+							<label>Name</label>
+							<span class="form-control rounded-0 fullname"></span>
+						</div>
+						</div>
+						<div class="col-6">
+						<div class="form-group">
+							<label>Date of Joining</label>
+							<span class="form-control rounded-0 doj"></span>
+						</div>
+						</div>
+						<div class="col-6">
+						<div class="form-group">
+							<label>Department</label>
+							<span class="form-control rounded-0 department"></span>
+						</div>
+						</div>
+						<div class="col-6">
+						<div class="form-group">
+							<label>Designation</label>
+							<span class="form-control rounded-0 designation"></span>
+						</div>
+						</div>
+                  </div>
+	 	  <div class="row leavebals">
+	 	  </div>
+                </div>
+                <div class="modal-footer">
+                  <button type="submit"  class="btn btn-primary" id="submit">Save</button>
+                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                  
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Footer -->
+      <footer th:replace="admin/index :: footer"> 
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div> 
+ <script>
+    $(document).ready(function () { 
+      $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+    
+      
+      $("#modalform").off( "submit");
+	   $("#modalform").submit(function(e) {
+
+	      e.preventDefault(); // avoid to execute the actual submit of the form.
+
+	      var form = $(this);
+	      var url = form.attr('action');
+	      
+	      $("#modalform .alert").hide();
+	      var data=form.serialize(); 
+	      $.ajax({
+	             type: "POST",
+	             url: $(this).attr("action"),  
+	             data:data , // serializes the form's elements.
+	   		    dataType: "json",
+	             success: function(data)
+	             {
+	   		      if(data.success)
+	                  {alert_toast(data.message,'success');  $("#formModal").modal('hide'); loaddata();} // show response from the php script.
+	   			  else
+	   				  {
+	   				alert_toast(data.message,'error'); // show response from the php script.  
+	   				  }
+	   		  
+	   		      }
+	           });
+	   		     }); 
+	   loaddata();
+    });
+    
+    function loaddata()
+    {
+    	 $('#dataTableHover tbody').html("  <h1>Loading........</h1>"); 
+    	 $.ajax({
+             type: "POST",
+             url: "/admin/JSON/leavebalances",  
+             data:{action:"readall",status:$("#selectstatus").val()} , // serializes the form's elements.
+   		    dataType: "json",
+             success: function(data)
+             {
+   		      if(data.success)
+                  {
+   		    	    data=data.data;
+   		    	 if ( $.fn.DataTable.isDataTable('#dataTableHover') ) {
+   		    	  $('#dataTableHover').DataTable().destroy();
+   		    	}
+   		    	 strhtml="";
+   		    	    for(i=0;i<data.length;i++)
+   		    	    	{
+   		    	    	 strhtml+="<tr><td>"+data[i].empid+"</td><td>"+data[i].name+"</td>"
+   		    	    	         +"<td>"+data[i].department+"<br/>"+data[i].designation+"<br/>"+formatdate(data[i].doj)+"</td><td>"+data[i].leavebal+"</td>"
+   		    	    	 strhtml+='<td><button type="button" class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">'
+				                  +'Action<span class="sr-only">Toggle Dropdown</span></button>'
+				                  +'<div class="dropdown-menu" role="menu">'
+				                  +' <a class="dropdown-item edit_data" href="javascript:void(0)" data-id="'+data[i].user+'"><span class="fa fa-edit text-primary"></span> Edit</a>' 				                  +'</div>'
+				                  +'</td>'
+   		    	    	          +'</tr>';
+   		    	    	}
+   		    	 $('#dataTableHover tbody').html(strhtml);
+   		    	$('#dataTableHover').DataTable();
+   		      
+   			
+   			$('.edit_data').click(function(){
+   				$("#modalform")[0].reset();
+   				  $('#formModal [name=action]').val('edit'); 
+   		    	  $('#formModal .modal-title').html('Edit Leave Credit Details');
+   		    	  $('#formModal [name=id]').val($(this).attr('data-id'));  
+   		     	 $.ajax({
+   		             type: "POST",
+   		             url: "/admin/JSON/leavebalances",  
+   		             data:{action:"read",user:$(this).attr('data-id')} , // serializes the form's elements.
+   		   		    dataType: "json",
+   		             success: function(data)
+   		             {
+   		   		      if(data.success)
+   		   		    	  {   
+   		   		    	    data=data.data;
+   		    	            $('#formModal .fullname').html(data.name);  
+   		    	            $('#formModal .empid').html(data.empid);  
+   		    	           $('#formModal .department').html(data.department);  
+   		    	           $('#formModal .designation').html(data.designation);  
+   		    	           $('#formModal .doj').html(formatdate(data.doj));    
+   		    	           strhtml='<div class="row col-12">';
+   		    	           strhtml+='<label class="col-3">Type</label><label class="col-3">Opening Balance</label><label class="col-3">Balance</label><label class="col-3">Used</label>';
+   		    	           for(  i=0;i<data.leavebal.length;i++)
+   		    	        	   {
+   		    	        	     strhtml+='<label class="col-3">'+data.leavebal[i].leavetype+'</label>'
+   		    	        	              +'<input class="form-control col-3 rounded-0" type="number"  name="elopenbal['+data.leavebal[i].id+']" value="'+data.leavebal[i].bal.openingbal+'">'
+   		    	        	              +'<input class="form-control  col-3 rounded-0" type="number"  name="elbal['+data.leavebal[i].id+']" value="'+data.leavebal[i].bal.bal+'">'
+   		    	        	              +'<span class="form-control  col-3 rounded-0">'+data.leavebal[i].bal.used+'</span>'; 
+   		    	        	   } 
+   		    	           strhtml+='</div>';
+   		    	           $('#formModal .leavebals').html(strhtml);    
+   		    	           $('#formModal').modal('show');
+   		   		    	  }
+   		   		      else
+   		   		    	  {
+   		   		    alert_toast(data.message,'error'); 
+   		   		    	  }
+                  }
+
+		 	          });
+   			});
+                  }
+   		      else
+                  alert(data.message);
+   		  
+   		      }
+           });
+    }
+    
+  
+  </script>
+
+</body>
+
+</html>

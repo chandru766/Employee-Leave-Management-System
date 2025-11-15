@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="admin/index :: head"> 
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="admin/index :: sidebar"> 
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav th:replace="admin/index :: sidebartop"> 
+        </nav>
+        <!-- Topbar -->
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          
+          <!-- Row -->
+          <div class="row">
+            <!-- DataTable with Hover -->
+            <div class="col-lg-12">
+              <div class="card mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h2 class="m-0 font-weight-bold text-primary">Edit Employee leave Application</h2>
+                  </div>  
+                <div class="card-body">
+                  <form action="/admin/JSON/empleaves" method="post" id="frmleave">
+                   <input type="hidden" name="action" th:value="edit">  
+                   <input type="hidden" name="id" id="id" th:value="${id}">  
+				   <div class="form-group">
+							<label for="employee" class="required">Employee</label>
+						   <input type="text" name="keyuser" id="keyuser"  class="form-control rounded-0" required> 
+                           <input type="hidden" name="user" id="user"    required>  
+						</div>
+						<div class="form-group" >
+						<label for="leavetype" class="required">Leave Type</label>
+						<select name="leavetype" id="leavetype" class="form-control     rounded-0" reqiured>
+							 	<option th:each="d:${leavetypes}" th:value="${d.id}" th:text="${d.code}"></option>					 
+						</select>
+					</div>
+						<div class="form-group">
+						<label for="type" class="required">Day Type</label>
+						<select id="type" name="type" class="form-control rounded-0">
+							<option value="1">Whole Day</option>
+							<option value="2">Half Day</option>
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="datestart" class="required">Date Start</label>
+						<input type="date" id="datestart" class="form-control form" required name="datestart">
+					</div>
+					<div class="form-group">
+						<label for="dateend" class="required">Date End</label>
+						<input type="date" id="dateend" class="form-control form" required name="dateend">
+					</div>
+					<div class="form-group">
+						<label for="leavedays" class="required">Days</label>
+						<input type="number" id="leavedays" class="form-control form" name="leavedays" readonly>
+					</div>
+					<div class="form-group">
+							<label for="reason" class="required">Reason</label>
+							<textarea rows="3" name="reason" id="reason" class="form-control rounded-0" style="resize:none !important" required></textarea>
+						</div>
+                    <div class="form-group row">
+                      <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                      </div>
+                    </div>
+                  </form>
+                </div> 
+       
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+          
+   </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Footer -->
+      <footer th:replace="admin/index :: footer"> 
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div> 
+ <script>
+
+
+	function calc_days(){
+		var days = 0;
+		if($('#datestart').val() != ''){
+			var start = new Date($('#datestart').val());
+			var end = new Date($('#dateend').val());
+			var diffDate = (end - start) / (1000 * 60 * 60 * 24);
+			days = Math.round(diffDate);
+		}
+		if($('#type').val() == 2)
+			$('#leavedays').val('.5')
+		else
+			$('#leavedays').val(days +1)
+
+	}
+        $(document).ready(function () { 
+        	$('#type').change(function(){
+    			if($(this).val() == 2){
+    			console.log($(this).val())
+    				$('#leave_days').val('.5')
+    				$('#dateend').attr('required',false)
+    				$('#dateend').val($('#datestart').val())
+    				$('#dateend').closest('.form-group').hide('fast')
+    			}else{
+    				$('#dateend').attr('reqiured',true)
+    				$('#dateend').closest('.form-group').show('fast')
+    				$('#leavedays').val(1)
+    			}
+    			calc_days()
+    		})
+    		$('#datestart, #dateend').change(function(){
+    			calc_days()
+    			
+    		})
+        	 
+    		
+    		$.ajax({
+	             type: "POST",
+	             url: "/admin/JSON/empleaves",  
+	             data:{action:"readleaveapplication",id:$('#id').val()} , // serializes the form's elements.   
+	   		    dataType: "json",
+	             success: function(data)
+	             {
+	   		      if(data.success)
+	                  {
+	   		    	   user=data.user;
+	   		    	   data=data.data;
+	   		    	   $("[name=keyuser]").val(user.fullname+" - "+user.type);
+	   		    	   $("[name=user]").val(user.id);
+	   		    	   $("[name=leavetype]").val(data.leavetype);
+	   		    	   $("[name=type]").val(data.type).change();
+	   		    	   $("[name=reason]").val(data.reason);
+	   		    	   $("[name=datestart]").val(data.fromdate);
+	   		    	   $("[name=dateend]").val(data.todate); 
+	                  } // show response from the php script.
+	   			  else
+	   				  {
+	   				alert_toast(data.message,'error'); // show response from the php script.  
+	   				  }
+	   		  
+	   		      }
+	           }); 
+    		
+     	    
+        	
+    	$("#frmleave").off( "submit");
+ 	   $("#frmleave").submit(function(e) {
+
+ 	      e.preventDefault(); // avoid to execute the actual submit of the form.
+ 	      
+ 	     if($('#type').val()==2)
+				$('#dateend').val($('#datestart').val())
+ 	      
+				var form = $(this);
+ 	            var url = form.attr('action');
+
+ 	 	      var data=form.serialize(); 
+ 	      $.ajax({
+ 	             type: "POST",
+ 	             url: $(this).attr("action"),  
+ 	             data:data , // serializes the form's elements. 
+ 	   		    dataType: "json",
+ 	             success: function(data)
+ 	             {
+ 	   		      if(data.success)
+ 	                  {
+ 	   		    	    alert_toast(data.message,'success');   
+ 	                    document.location.href="/admin/leaveapplications";
+ 	                  } // show response from the php script.
+ 	   			  else
+ 	   				  {
+ 	   				alert_toast(data.message,'error'); // show response from the php script.  
+ 	   				  }
+ 	   		  
+ 	   		      }
+ 	           });
+ 	   		     }); 
+    	 }); 
+        
+ 
+        
+  </script>
+
+</body>
+
+</html>

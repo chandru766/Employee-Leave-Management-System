@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="admin/index :: head"> 
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="admin/index :: sidebar"> 
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav th:replace="admin/index :: sidebartop"> 
+        </nav>
+        <!-- Topbar -->
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          
+          <!-- Row -->
+          <div class="row">
+            <!-- DataTable with Hover -->
+            <div class="col-lg-12">
+              <div class="card mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h2 class="m-0 font-weight-bold text-primary">Users - <select onclick="loaddata()"  id="selectstatus">
+                   <option value=1>Active</option>
+                   <option value=0>Inactive</option>
+                  </select></h2>
+                   <div class="card-tools float-right">
+			<a href="javascript:void(0)" class="btn btn-flat btn-primary" id="create_new"><span class="fas fa-plus"></span>  Create New</a>
+		</div>
+                </div>
+               
+                <div class="table-responsive p-3">
+                  <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                      <tr>
+                        <th>Type</th> 
+                        <th>Username</th>  
+                        <th>Name</th>  
+                        <th>Email</th> 
+                        <th>Contact</th> 
+                        <th>Date Created</th>
+                        <th>Action</th>
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr>
+                        <th>Type</th> 
+                        <th>Username</th>  
+                        <th>Name</th>  
+                        <th>Email</th> 
+                        <th>Contact</th> 
+                        <th>Date Created</th>
+                        <th>Action</th>
+                      </tr>
+                    </tfoot>
+                    <tbody>
+                    
+                    </tbody>
+                     </table>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+          
+
+          <!-- Modal Logout -->
+          <div class="modal fade" id="formModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelform"
+            aria-hidden="true">
+            <div class="modal-dialog" role="document">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h2 class="modal-title" id="exampleModalLabelform"></h2>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <form action="/admin/JSON/users" id="modalform" method="post">
+                <div class="modal-body">
+             	
+		<input type="hidden" name ="id" value="0">
+		<input type="hidden" name ="action" value="">
+
+		<div class="form-group row">
+                      <label for="fullname" class="col-sm-3 col-form-label required">Full Name</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" name="fullname" id="fullname"   required>
+                      </div>
+                    </div>
+                     
+                    <div class="form-group row">
+                      <label for="username" class="col-sm-3 col-form-label required">Username</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="username" name="username"   required>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label required">Email</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3" name="email"  required>
+                      </div>
+                    </div>
+                     
+                    <div class="form-group row">
+                      <label for="contact" class="col-sm-3 col-form-label required">Contact</label>
+                      <div class="col-sm-9">
+                        <input type="text" minlength=10 maxlength=10 class="form-control" id="contact" name="contact"    required>
+                      </div>
+                    </div> 
+                    <div class="form-group row">
+                      <label for="contact" class="col-sm-3 col-form-label required">Type</label>
+                      <div class="col-sm-9">
+                        <select class="form-control" id="type" name="type"    required> 
+                      <option th:each="d:${types}" th:value="${d}" th:text="${d}"></option> 
+                        </select>
+                      </div>
+                    </div> 
+                    <div class="form-group row">
+                      <label for="password" class="col-sm-3 col-form-label required">Password</label>
+                      <div class="col-sm-9">
+                        <input type="password" class="form-control" id="password" name="password"    required>
+                      </div>
+                    </div> 
+                       <div class="form-group row">
+                      <label for="status" class="col-sm-3 col-form-label required">Status</label>
+                      <div class="col-sm-9">
+                       <select  class="form-control"  id="status" name="status">
+                   <option value=1>Active</option>
+                   <option value=0>Inactive</option>
+                  </select>
+                        </div>
+                    </div> 
+	 
+                </div>
+                <div class="modal-footer">
+                  <button type="submit"  class="btn btn-primary" id="submit">Save</button>
+                  <button type="button" class="btn btn-outline-primary" data-dismiss="modal">Cancel</button>
+                  
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Footer -->
+      <footer th:replace="admin/index :: footer"> 
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div> 
+ <script>
+    $(document).ready(function () { 
+      $('#dataTableHover').DataTable(); // ID From dataTable with Hover
+      
+      $("#create_new").click(function(){
+    	  $('#formModal [name=action]').val('add');
+    	  $("#modalform")[0].reset();
+    	  $("#modalform [name=password]").attr("required",true);
+	    	$("#modalform [for=password]").addClass("required");
+    	  $('#formModal [name=id]').val('0');  
+    	  $('#formModal .modal-title').html('Create New User');
+    	  $('#formModal').modal('show');
+      });
+      
+      
+      $('input[name=fullname]').on('keypress',function(event){
+   			 return validatealpha(event);		 
+   		 });  
+     
+     
+     $('input[name=contact]').on('keypress',function(event){
+   		 return validatemobile(event);		 
+   	 });
+      
+      $("#modalform").off( "submit");
+	   $("#modalform").submit(function(e) {
+
+	      e.preventDefault(); // avoid to execute the actual submit of the form.
+
+	      var form = $(this);
+	      var url = form.attr('action');
+	      
+	      $("#modalform .alert").hide();
+	      var data=form.serialize(); 
+	      $.ajax({
+	             type: "POST",
+	             url: $(this).attr("action"),  
+	             data:data , // serializes the form's elements.
+	   		    dataType: "json",
+	             success: function(data)
+	             {
+	   		      if(data.success)
+	                  {alert_toast(data.message,'success');  $("#formModal").modal('hide'); loaddata();} // show response from the php script.
+	   			  else
+	   				  {
+	   				alert_toast(data.message,'error'); // show response from the php script.  
+	   				  }
+	   		  
+	   		      }
+	           });
+	   		     }); 
+	   loaddata();
+    });
+    
+    function loaddata()
+    {
+    	 $('#dataTableHover tbody').html("  <h1>Loading........</h1>"); 
+    	 $.ajax({
+             type: "POST",
+             url: "/admin/JSON/users",  
+             data:{action:"readall",status:$("#selectstatus").val()} , // serializes the form's elements.
+   		    dataType: "json",
+             success: function(data)
+             {
+   		      if(data.success)
+                  {
+   		    	    data=data.data;
+   		    	 if ( $.fn.DataTable.isDataTable('#dataTableHover') ) {
+   		    	  $('#dataTableHover').DataTable().destroy();
+   		    	}
+   		    	 strhtml="";
+   		    	    for(i=0;i<data.length;i++)
+   		    	    	{
+   		    	    	 strhtml+="<tr><td>"+data[i].type+"</td><td>"+data[i].username+"<br/>"+(data[i].status==1?'<span class="badge badge-success">Active</span>':'<span class="badge badge-secondary">Inactive</span>')+"</td><td>"+data[i].fullname+"</td>"
+   		    	    	         +"<td>"+data[i].email+"</td><td>"+data[i].contact+"</td><td>"+formattimestamp(data[i].date_added)+"</td>"
+   		    	    	 strhtml+='<td><button type="button" class="btn btn-flat btn-default btn-sm dropdown-toggle dropdown-icon" data-toggle="dropdown">'
+				                  +'Action<span class="sr-only">Toggle Dropdown</span></button>'
+				                  +'<div class="dropdown-menu" role="menu">'
+				                  +' <a class="dropdown-item edit_data" href="javascript:void(0)" data-id="'+data[i].id+'"><span class="fa fa-edit text-primary"></span> Edit</a>' 				                  +'</div>'
+				                  +'</td>'
+   		    	    	          +'</tr>';
+   		    	    	}
+   		    	 $('#dataTableHover tbody').html(strhtml);
+   		    	$('#dataTableHover').DataTable();
+   		      
+   			
+   			$('.edit_data').click(function(){
+   				$("#modalform")[0].reset();
+   				  $('#formModal [name=action]').val('edit'); 
+   		    	  $('#formModal .modal-title').html('Edit User Details');
+   		    	  $('#formModal [name=id]').val($(this).attr('data-id')); 
+   		    	$("#modalform [name=password]").attr("required",false);
+   		    	$("#modalform [for=password]").removeClass("required");
+   		     	 $.ajax({
+   		             type: "POST",
+   		             url: "/admin/JSON/users",  
+   		             data:{action:"read",id:$(this).attr('data-id')} , // serializes the form's elements.
+   		   		    dataType: "json",
+   		             success: function(data)
+   		             {
+   		   		      if(data.success)
+   		   		    	  {   
+   		   		    	    data=data.data;
+   		    	            $('#formModal [name=fullname]').val(data.fullname);  
+   		    	            $('#formModal [name=email]').val(data.email);  
+   		    	           $('#formModal [name=contact]').val(data.contact);  
+   		    	          $('#formModal [name=username]').val(data.username);  
+   		    	          $('#formModal [name=type]').val(data.type);  
+   		    	           $('#formModal [name=status]').val(data.status);  
+   		    	            $('#formModal').modal('show');
+   		   		    	  }
+   		   		      else
+   		   		    	  {
+   		   		    alert_toast(data.message,'error'); 
+   		   		    	  }
+                  }
+
+		 	          });
+   			});
+                  }
+   		      else
+                  alert(data.message);
+   		  
+   		      }
+           });
+    }
+    
+  
+  </script>
+
+</body>
+
+</html>

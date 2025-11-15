@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security" lang="en">
+
+<head th:fragment="head">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link href="/assets/img/logo/logo.png" rel="icon">
+  <title>Online Leave Management System</title>
+  <link href="/assets/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+  <link href="/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+  <link href="/assets/css/ruang-admin.min.css" rel="stylesheet">
+  <link href="/assets/css/style.css" rel="stylesheet">
+  <link href="/assets/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+   <link href="/assets/vendor/jquery-ui/jquery-ui.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/vendor/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul class="navbar-nav sidebar sidebar-light accordion" id="accordionSidebar" th:fragment="sidebar">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="/">
+        <div class="sidebar-brand-icon">
+          <img src="/assets/img/logo/logo.png">
+        </div>
+        <div class="sidebar-brand-text mx-3">Online Leave Management System</div>
+      </a>
+      <hr class="sidebar-divider my-0">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">
+          <i class="fas fa-fw fa-tachometer-alt"></i>
+          <span>Dashboard</span></a>
+      </li> 
+       <hr class="sidebar-divider">
+      <div class="sidebar-heading">
+        Leave Management
+      </div>
+      <li class="nav-item">
+        <a class="nav-link" href="/employee/myleaveapplications">
+          <i class="far fa-fw fa-window-maximize"></i>
+          <span>My Applications</span>
+        </a> 
+      </li>
+       <li class="nav-item">
+        <a class="nav-link" href="/employee/myleavebalance">
+          <i class="far fa-fw fa-window-maximize"></i>
+          <span>My leave Balance</span>
+        </a> 
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/employee/teamleaveapplications">
+          <i class="far fa-fw fa-window-maximize"></i>
+          <span>My Team Applications</span>
+        </a> 
+      </li>
+       <hr class="sidebar-divider">
+      <div class="sidebar-heading">
+        Reports
+      </div>
+      <li class="nav-item">
+        <a class="nav-link" href="/employee/mydetails">
+          <i class="far fa-fw fa-window-maximize"></i>
+          <span>My Details</span>
+        </a> 
+      </li> 
+      <li class="nav-item">
+        <a class="nav-link" href="/employee/teamreport">
+          <i class="far fa-fw fa-window-maximize"></i>
+          <span>Team Employees</span>
+        </a> 
+      </li> 
+            <li class="nav-item">
+        <a class="nav-link" href="/employee/myleavesreport">
+          <i class="far fa-fw fa-window-maximize"></i>
+          <span>My Leaves</span>
+        </a> 
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/employee/teamleavesreport">
+          <i class="far fa-fw fa-window-maximize"></i>
+          <span>Team Leaves</span>
+        </a> 
+      </li> 
+       <li class="nav-item">
+        <a class="nav-link" href="/employee/holidays">
+          <i class="far fa-fw fa-window-maximize"></i>
+          <span>Holidays</span>
+        </a> 
+      </li>
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav class="navbar navbar-expand navbar-light bg-navbar topbar mb-4 static-top" th:fragment="sidebartop">
+          <button id="sidebarToggleTop" class="btn btn-link rounded-circle mr-3">
+            <i class="fa fa-bars"></i>
+          </button>
+          <ul class="navbar-nav ml-auto">
+        
+            <div class="topbar-divider d-none d-sm-block"></div>
+            <li class="nav-item dropdown no-arrow">
+              <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false">
+                
+                <img th:src="${'/stravatars/'+#authentication.principal.username}"  style="max-width: 60px"  alt=""  class="img-profile rounded-circle">
+               
+                <span class="ml-2 d-none d-lg-inline text-white small"><div sec:authentication="name"></div></span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+                <a class="dropdown-item" href="/employee/profile">
+                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Profile
+                </a>
+                <a class="dropdown-item" href="/employee/changepassword">
+                  <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Change Password
+                </a>
+                
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout">
+                  <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+                  Logout
+                </a>
+              </div>
+            </li>
+          </ul>
+        </nav>
+        <!-- Topbar -->
+
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          <div class="d-sm-flex align-items-center justify-content-between mb-4">
+            <h1 class="h3 mb-0 text-gray-800">Dashboard</h1>
+            <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="/">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
+            </ol>
+          </div>
+
+          <div class="row mb-3">
+            <!-- Earnings (Monthly) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="row align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-uppercase mb-1">Pending Applications</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800" id="pendingapps"> </div>
+                     
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-file-alt fa-2x text-primary"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Earnings (Annual) Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-uppercase mb-1">Total Departments</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800" id="totdep"> </div>
+                       
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-building fa-2x text-success"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- New User Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-uppercase mb-1">Total Designations</div>
+                      <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800" id="totaldes"> </div>
+                     
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-th-list fa-2x text-info"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Pending Requests Card Example -->
+            <div class="col-xl-3 col-md-6 mb-4">
+              <div class="card h-100">
+                <div class="card-body">
+                  <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                      <div class="text-xs font-weight-bold text-uppercase mb-1">Total Active Employees</div>
+                      <div class="h5 mb-0 font-weight-bold text-gray-800" id="totalemps"> </div>
+                       
+                    </div>
+                    <div class="col-auto">
+                      <i class="fas fa-list fa-2x text-warning"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+   
+
+        </div>
+        <!---Container Fluid-->
+      </div>
+      <!-- Footer -->
+      <footer class="sticky-footer bg-white"  th:fragment="footer">
+        <div class="container my-auto">
+          <div class="copyright text-center my-auto">
+            <span>copyright &copy; <script> document.write(new Date().getFullYear()); </script> 
+            </span>
+          </div>
+        </div>
+         <!-- Scroll to top -->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fas fa-angle-up"></i>
+  </a>
+
+  <script src="/assets/vendor/jquery/jquery.min.js"></script>
+   <script src="/assets/vendor/jquery-ui/jquery-ui.min.js"></script>
+  <script src="/assets/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/vendor/jquery-easing/jquery.easing.min.js"></script>
+  <script src="/assets/js/ruang-admin.min.js"></script> 
+  <script src="/assets/js/main.js"></script> 
+  <script src="/assets/vendor/datatables/jquery.dataTables.min.js"></script>
+  <script src="/assets/vendor/datatables/dataTables.bootstrap4.min.js"></script> 
+    <script src="/assets/vendor/sweetalert2/sweetalert2.min.js"></script> 
+    <script src="/assets/vendor/toastr/toastr.min.js"></script>
+  <div class="modal fade" id="confirm_modal" role='dialog'>
+    <div class="modal-dialog modal-md modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+      </div>
+      <div class="modal-body">
+        <div id="delete_content"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id='confirm' onclick="">Continue</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+      </div>
+    </div>
+  </div>
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div>
+  <script>
+$(document).ready(function () { 
+ $.ajax({
+             type: "POST",
+             url: "/employee/JSON/dashboard",   
+   		    dataType: "json",
+             success: function(data)
+             {
+   		      if(data.success)
+                  {
+                    $("#pendingapps").html(data.pendingapps);
+                    $("#totdep").html(data.departments);
+                    $("#totaldes").html(data.designations);
+                    $("#totalemps").html(data.activeemps);
+                  }
+             }
+                  });
+});
+</script>
+</body>
+
+</html>

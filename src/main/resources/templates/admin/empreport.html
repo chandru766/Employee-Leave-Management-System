@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="admin/index :: head"> 
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="admin/index :: sidebar"> 
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav th:replace="admin/index :: sidebartop"> 
+        </nav>
+        <!-- Topbar -->
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          
+          <!-- Row -->
+          <div class="row">
+            <!-- DataTable with Hover -->
+            <div class="col-lg-12">
+              <div class="card mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h2 class="m-0 font-weight-bold text-primary">Employee(Active) Report</h2>
+                       <a href="javascript:void(0)" class="btn btn-flat btn-success ml-3" id="print"><span class="fas fa-print"></span>  Print</a>
+                </div>
+               <div class="table-responsive p-3" id="print_out">
+                  <table class="table align-items-center table-flush table-hover" id="dataTableHover">
+                    <thead class="thead-light">
+                      <tr>  
+                        <th>Name</th>   
+                        <th>Empid</th> 
+                        <th>Gender</th>
+                        <th>DOB</th>  
+                        <th>DOJ</th>  
+                        <th>Department</th> 
+                        <th>Designation</th> 
+                      </tr>
+                    </thead>
+                    <tfoot>
+                      <tr> 
+                        <th>Name</th>   
+                        <th>Empid</th> 
+                        <th>Gender</th>
+                        <th>DOB</th>  
+                        <th>DOJ</th>  
+                        <th>Department</th> 
+                        <th>Designation</th> 
+                      </tr>
+                    </tfoot>
+                    <tbody>
+                    <tr>
+                    <td>
+                       <h1>Loading........</h1>
+                    </td>
+                    </tr>
+                    </tbody>
+                     </table>
+                </div>
+                 
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+</div>
+</div>
+          
+
+          
+
+      <!-- Footer -->
+      <footer th:replace="admin/index :: footer"> 
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div> 
+ <script>
+    $(document).ready(function () { 
+    	loaddata();
+    	
+    	 $('#print').click(function(){ 
+             var _h = $('head').clone()
+             var _p = $('#print_out').clone();
+             var _el = $('<div>')
+             _el.append(_h)
+             _el.append('<style>html, body, .wrapper {min-height: unset !important;}</style>')
+             var rdate = "";
+             _p.prepend('<div class="d-flex mb-3 w-100 align-items-center justify-content-center">'+
+             '<img class="mx-4" src="/assets/img/logo/logo.png" width="50px" height="50px"/>'+
+             '<div class="px-2">'+
+             '<h3 class="text-center">XYZ company</h3>'+
+             '<h3 class="text-center">Employee(Active) Reports</h3>'+
+             '<h4 class="text-center">as of</h4>'+
+             '<h4 class="text-center">'+formatdateshort(new Date())+'</h4>'+
+             '</div>'+
+             '</div><hr/>');
+             _el.append(_p)
+             var nw = window.open("","_blank","width=1200,height=1200")
+                 nw.document.write(_el.html())
+                 nw.document.close()
+                 setTimeout(() => {
+                     nw.print()
+                     setTimeout(() => {
+                         nw.close() 
+                     }, 300);
+                 }, 500);
+         })
+    	
+    });
+    
+    function loaddata()
+    {
+    	let data=new FormData();
+    	data.append('action','report');
+    	 $.ajax({
+             type: "POST",
+             url: "/admin/JSON/employees",  
+             data:data , // serializes the form's elements.
+             processData: false,
+              contentType:false,
+   		    dataType: "json",
+             success: function(data)
+             {
+   		      if(data.success)
+                  {
+   		    	    data=data.data;
+   		    	 if ( $.fn.DataTable.isDataTable('#dataTableHover') ) {
+   		    	  $('#dataTableHover').DataTable().destroy();
+   		    	}
+   		    	 strhtml="";
+   		    	    for(i=0;i<data.length;i++)
+   		    	    	{
+   		    	    	 strhtml+="<tr><td>"+data[i].name+"</td><td>"+data[i].empid+"</td><td>"+data[i].gender+"</td><td>"+formatdateshort(data[i].dob)+"</td><td>"+formatdateshort(data[i].doj)+"</td><td>"+data[i].department+"</td><td>"+data[i].designation+"</td></tr>";
+   		    	    	}
+   		    	 $('#dataTableHover tbody').html(strhtml); 
+   		    
+                  }
+   		      else
+                  alert(data.message);
+   		  
+   		      }
+           });
+    }
+    
+    
+  </script>
+
+</body>
+
+</html>

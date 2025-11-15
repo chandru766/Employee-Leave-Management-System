@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="admin/index :: head"> 
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="admin/index :: sidebar"> 
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav th:replace="admin/index :: sidebartop"> 
+        </nav>
+        <!-- Topbar -->
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          
+          <!-- Row -->
+          <div class="row">
+            <!-- DataTable with Hover -->
+            <div class="col-lg-12">
+               <div class="card">
+    <div class="card-body">
+        <div class="w-100 d-flex justify-content-end mb-3">
+             
+            <a href="javascript:void(0)" class="btn btn-flat btn-success ml-3" id="print"><span class="fas fa-print"></span>  Print</a>
+        </div>
+        <div id="print_out">
+        <table class="table info-table">
+            <tr class='boder-0'>
+                <td width="20%">
+                    <div class="w-100 d-flex align-items-center justify-content-center">
+                        <img th:src="${'/avatars/'+uobj.username}"  alt="Employee Avatar" class="img-thumbnail" >
+                    </div>
+                </td>
+                <td width="80%" class='boder-0 align-bottom'>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="d-flex w-max-100">
+                                <label class="float-left w-auto whitespace-nowrap">Employee ID:</label>
+                                <p class="col-md-auto border-bottom border-dark w-100"><b th:text="${eobj.empid}"></b></p>
+                            </div>
+                            <div class="d-flex w-max-100">
+                                <label class="float-left w-auto whitespace-nowrap">Name:</label>
+                                <p class="col-md-auto border-bottom border-dark w-100"><b th:text="${uobj.fullname}"></b></p>
+                            </div>
+                            <div class="row justify-content-between  w-max-100 mr-0">
+                                <div class="col-6 d-flex w-max-100">
+                                    <label class="float-left w-auto whitespace-nowrap">DOB: </label>
+                                    <p class="col-md-auto border-bottom px-2 border-dark w-100"><b th:text="${#dates.format(eobj.dob,'dd-MM-yyyy')}"></b></p>
+                                </div>
+                                <div class="col-6 d-flex w-max-100">
+                                    <label class="float-left w-auto whitespace-nowrap">Contact No.: </label>
+                                    <p class="col-md-auto border-bottom px-2 border-dark w-100"><b th:text="${uobj.contact}"></b></p>
+                                </div>
+                            </div>
+                            <div class="d-flex w-max-100">
+                                <label class="float-left w-auto whitespace-nowrap">Address:</label>
+                                <p class="col-md-auto border-bottom border-dark w-100"><b  th:text="${eobj.address}"></b></p>
+                            </div>
+                            <div class="row justify-content-between  w-max-100  mr-0">
+                                <div class="col-6 d-flex w-max-100">
+                                    <label class="float-left w-auto whitespace-nowrap">Department: </label>
+                                    <p class="col-md-auto border-bottom px-2 border-dark w-100"><b  th:text="${department}"></b></p>
+                                </div>
+                                <div class="col-6 d-flex w-max-100">
+                                    <label class="float-left w-auto whitespace-nowrap">Designation: </label>
+                                    <p class="col-md-auto border-bottom px-2 border-dark w-100"><b   th:text="${designation}"></b></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table> 
+         </div>
+    </div>
+</div>
+                </div> 
+        
+          </div>
+          <!--Row-->
+
+          
+   </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Footer -->
+      <footer th:replace="admin/index :: footer"> 
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div>  
+<script>
+    $(function(){
+       
+        $('#print').click(function(){ 
+            var _h = $('head').clone()
+            var _p = $('#print_out').clone();
+            var _el = $('<div>')
+            _el.append(_h)
+            _el.append('<style>html, body, .wrapper {min-height: unset !important;}.btn{display:none !important}</style>')
+            _p.prepend('<div class="d-flex mb-3 w-100 align-items-center justify-content-center">'+
+            '<img class="mx-4" src="/assets/img/logo/logo.png" width="50px" height="50px"/>'+
+            '<div class="px-2">'+
+            '<h3 class="text-center">XYZ Company</h3>'+
+            '<h3 class="text-center">Employee Information</h3>'+
+            '</div>'+
+            '</div><hr/>');
+            _el.append(_p)
+            var nw = window.open("","_blank","width=1200,height=1200")
+                nw.document.write(_el.html())
+                nw.document.close()
+                setTimeout(() => {
+                    nw.print()
+                    setTimeout(() => {
+                        nw.close() 
+                    }, 300);
+                }, 500);
+        })
+    })
+</script>
+</body>
+
+</html>

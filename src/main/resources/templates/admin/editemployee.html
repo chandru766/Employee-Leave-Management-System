@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="admin/index :: head"> 
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="admin/index :: sidebar"> 
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav th:replace="admin/index :: sidebartop"> 
+        </nav>
+        <!-- Topbar -->
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          
+          <!-- Row -->
+          <div class="row">
+            <!-- DataTable with Hover -->
+            <div class="col-lg-12">
+              <div class="card mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h2 class="m-0 font-weight-bold text-primary">Edit Employee</h2>
+                  </div>  
+                <div class="card-body">
+                  <form action="/admin/JSON/employees" method="post" id="frmprofile"  enctype="multipart/form-data">
+                   <input type="hidden" name="action" th:value="edit">
+                  <input type="hidden" name="user" th:value="${uobj.id}">
+                  <div class="row">
+                     <div class="col-6">
+						<div class="form-group">
+							<label>Username</label>
+							<span class="form-control rounded-0" th:text="${uobj.username}"></span>
+						</div>
+						</div>
+						<div class="col-6">
+						<div class="form-group">
+							<label>Name</label>
+							<span class="form-control rounded-0" th:text="${uobj.fullname}"></span>
+						</div>
+						</div>
+						<div class="col-6">
+						<div class="form-group">
+							<label>Email</label>
+							<span class="form-control rounded-0" th:text="${uobj.email}"></span>
+						</div>
+						</div>
+						<div class="col-6">
+						<div class="form-group">
+							<label>Contact</label>
+							<span class="form-control rounded-0" th:text="${uobj.contact}"></span>
+						</div>
+						</div>
+                  </div>
+                  <div class="row">
+					<div class="col-6">
+						<div class="form-group">
+							<label for="employee_id" class="required">Employee ID</label>
+							<input type="text" name="employee_id" id="employee_id" th:value="${eobj.empid}" class="form-control rounded-0" required>
+						</div>
+						 
+						<div class="form-group">
+							<label for="dob">DOB</label>
+							<input type="date" name="dob" id="dob" class="form-control rounded-0"  th:value="${#dates.format(eobj.dob,'yyyy-MM-dd')}">
+						</div>
+						 <div class="form-group" >
+							<label for="designation_id" class="required">Gender</label>
+							<select  id="gender" name="gender" class="form-control" reqiured>
+							 <option value=1 th:selected="${eobj.gender == 1}">Male</option>
+							 <option value=0 th:selected="${eobj.gender == 0}">Female</option>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="address">Address</label>
+							<textarea rows="3" name="address" id="address" class="form-control rounded-0" style="resize:none !important"  th:text="${eobj.address}"> </textarea>
+						</div>
+						 <div class="form-group">
+							<label for="resigned">Resigned</label>
+							<input type="checkbox" name="resigned" id="resigned" class="form-control"  th:checked="${eobj.resigned == 1}" value="1">
+						</div>
+						 <div th:class="${'form-group '+( eobj.resigned == 0 ?'d-none':'')}" id="resigneddate">
+							<label for="dob"  class="required">Date of resigned(Last working date)</label>
+							<input type="date" name="dor" id="dor" class="form-control rounded-0"    th:value="${#dates.format(eobj.dor,'yyyy-MM-dd')}">
+						</div>
+					</div>
+					<div class="col-6">
+						<div class="form-group">
+							<label for="department" class="required">Department</label>
+							<select name="department" id="department" class="form-control" reqiured>
+								 <option th:each="d:${departments}" th:value="${d.id}" th:text="${d.name}" th:selected="${d.id == eobj.department}"></option>
+							</select>
+						</div>
+						<div class="form-group" >
+							<label for="designation" class="required">Designation</label>
+							<select name="designation" id="designation" class="form-control" reqiured>
+							 		 <option th:each="d:${designations}" th:value="${d.id}" th:text="${d.name}" th:selected="${d.id == eobj.designation}"></option>
+						
+							</select>
+						</div>
+					 <div class="form-group">
+							<label for="dob"  class="required">Date of Joining</label>
+							<input type="date" name="doj" id="doj" class="form-control rounded-0"    th:value="${#dates.format(eobj.doj,'yyyy-MM-dd')}" required>
+						</div>
+						<div class="form-group">
+							<label for="employee_id" class="required">Reporting To</label>
+						 <input type="text" name="keyreportingto" id="keyreportingto"  th:value="${reportingtoname}" class="form-control rounded-0" required> 
+                       <input type="hidden" name="reportingto" id="reportingto"  th:value="${eobj.reportingto}"  required>  
+						</div>
+						<div class="form-group">
+							<label for="" class="control-label">Avatar</label>
+							<div class="custom-file">
+								<input type="hidden" name="avatar" >
+							<input type="file" class="custom-file-input rounded-circle" id="customFile" name="img" onchange="displayImg(this,$(this))">
+							<label class="custom-file-label" for="customFile">Choose file</label>
+							</div>
+						</div>
+						<div class="form-group d-flex justify-content-center">
+							<img th:src="${'/avatars/'+uobj.id}"   alt="" id="cimg" class="img-fluid img-thumbnail">
+						</div>
+					</div>
+				</div>
+                    <div class="form-group row">
+                      <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                      </div>
+                    </div>
+                  </form>
+                </div> 
+       
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+          
+   </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Footer -->
+      <footer th:replace="admin/index :: footer"> 
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div> 
+ <script>
+
+    	
+    	function displayImg(input,_this) {
+    	    if (input.files && input.files[0]) {
+    	        var reader = new FileReader();
+    	        reader.onload = function (e) {
+    	        	$('#cimg').attr('src', e.target.result);
+    	        }
+
+    	        reader.readAsDataURL(input.files[0]);
+    	    }
+    	}
+        $(document).ready(function () { 
+        	$("#resigned").click(function(){
+        		if($("#resigned").prop("checked"))
+        			{
+        			   $("#resigneddate").removeClass("d-none");
+        			}
+        		else
+        			  $("#resigneddate").addClass("d-none");
+        	});
+        	 $( "#keyreportingto" ).autocomplete({
+             	minLength: 2,
+             	 select: function( event, ui ) {
+             	        $('#reportingto').val(ui.item.id);
+             	      },
+             	source: function( request, response ) {
+                     $.ajax( {
+                       url: "/admin/JSON/users", 
+                       method:"POST",
+                       data: {
+                     	  key: request.term,
+                     	  type:'EMPLOYEE',
+                           action:"search"
+                       },
+                       success: function( data ) {
+                     	  response( data.data);
+                       }
+                     })
+             	}
+             });
+     	    
+        	
+    	$("#frmprofile").off( "submit");
+ 	   $("#frmprofile").submit(function(e) {
+
+ 	      e.preventDefault(); // avoid to execute the actual submit of the form.
+
+ 	      var form = $(this);
+ 	      var url = form.attr('action');
+ 	        
+ 	      $.ajax({
+ 	             type: "POST",
+ 	             url: $(this).attr("action"),  
+ 	             data:new FormData(this) , // serializes the form's elements.  
+ 	            processData: false,
+ 	                    contentType:false,
+ 	   		    dataType: "json",
+ 	             success: function(data)
+ 	             {
+ 	   		      if(data.success)
+ 	                  {alert_toast(data.message,'success');   } // show response from the php script.
+ 	   			  else
+ 	   				  {
+ 	   				alert_toast(data.message,'error'); // show response from the php script.  
+ 	   				  }
+ 	   		  
+ 	   		      }
+ 	           });
+ 	   		     }); 
+    	 }); 
+  </script>
+
+</body>
+
+</html>

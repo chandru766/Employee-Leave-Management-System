@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head th:replace="admin/index :: head"> 
+</head>
+
+<body id="page-top">
+  <div id="wrapper">
+    <!-- Sidebar -->
+    <ul th:replace="admin/index :: sidebar"> 
+    </ul>
+    <!-- Sidebar -->
+    <div id="content-wrapper" class="d-flex flex-column">
+      <div id="content">
+        <!-- TopBar -->
+        <nav th:replace="admin/index :: sidebartop"> 
+        </nav>
+        <!-- Topbar -->
+        <!-- Container Fluid-->
+        <div class="container-fluid" id="container-wrapper">
+          
+          <!-- Row -->
+          <div class="row">
+            <!-- DataTable with Hover -->
+            <div class="col-lg-12">
+              <div class="card mb-4">
+                <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                  <h2 class="m-0 font-weight-bold text-primary">Profile</h2>
+                  </div>  
+                <div class="card-body">
+                  <form action="/admin/updateprofile" method="post" id="frmprofile">
+                  <div class="form-group row">
+                      <label for="fullname" class="col-sm-3 col-form-label required">Full Name</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" name="fullname" id="fullname" th:value="${obj.fullname}" required>
+                      </div>
+                    </div>
+                     
+                    <div class="form-group row">
+                      <label for="username" class="col-sm-3 col-form-label required">Username</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="username" name="username" th:value="${obj.username}" required>
+                      </div>
+                    </div>
+                    <div class="form-group row">
+                      <label for="inputEmail3" class="col-sm-3 col-form-label required">Email</label>
+                      <div class="col-sm-9">
+                        <input type="email" class="form-control" id="inputEmail3" name="email" th:value="${obj.email}" required>
+                      </div>
+                    </div>
+                     
+                    <div class="form-group row">
+                      <label for="contact" class="col-sm-3 col-form-label required">Contact</label>
+                      <div class="col-sm-9">
+                        <input type="text" class="form-control" id="contact" name="contact"  th:value="${obj.contact}" required>
+                      </div>
+                    </div> 
+                    <div class="form-group row">
+                      <div class="col-sm-10">
+                        <button type="submit" class="btn btn-primary">Save Profile</button>
+                      </div>
+                    </div>
+                  </form>
+                </div> 
+       
+              </div>
+            </div>
+          </div>
+          <!--Row-->
+
+          
+   </div>
+        <!---Container Fluid-->
+      </div>
+
+      <!-- Footer -->
+      <footer th:replace="admin/index :: footer"> 
+      </footer>
+      <!-- Footer -->
+    </div>
+  </div> 
+ <script>
+    $(document).ready(function () { 
+    	$("#frmprofile").off( "submit");
+ 	   $("#frmprofile").submit(function(e) {
+
+ 	      e.preventDefault(); // avoid to execute the actual submit of the form.
+
+ 	      var form = $(this);
+ 	      var url = form.attr('action');
+ 	       
+ 	      var data=form.serialize(); 
+ 	      $.ajax({
+ 	             type: "POST",
+ 	             url: $(this).attr("action"),  
+ 	             data:data , // serializes the form's elements.
+ 	   		    dataType: "json",
+ 	             success: function(data)
+ 	             {
+ 	   		      if(data.success)
+ 	                  {
+ 	   		   	   		
+ 	   		    	     alert_toast(data.message,'success');
+ 	   		   	   		 if(data.success==2)
+ 	   		   	   		   document.location.href="/logout";
+ 	                  } // show response from the php script.
+ 	   			  else
+ 	   				  {
+ 	   				alert_toast(data.message,'error'); // show response from the php script.  
+ 	   				  }
+ 	   		  
+ 	   		      }
+ 	           });
+ 	   		     }); 
+    	 }); 
+  </script>
+
+</body>
+
+</html>
